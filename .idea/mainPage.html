@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Noeru Crypto Inc | Main Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --primary: #007bff;
+      --primary-dark: #0056b3;
+      --danger: #dc3545;
+      --danger-dark: #b52a37;
+      --sidebar-bg: #f7faff;
+      --active-bg: #eaf0fb;
+      --text: #222;
+      --shadow: 0 8px 24px rgba(0,0,0,0.13);
+      --radius: 16px;
+    }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #eaf0fb;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .dashboard-main {
+      display: flex;
+      width: 100%;
+      max-width: 1000px;
+      margin-top: 38px;
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      background: #fff;
+      min-height: 500px;
+      overflow: hidden;
+    }
+    .sidebar {
+      background: var(--sidebar-bg);
+      padding: 30px 0 30px 0;
+      width: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+      border-right: 1px solid #e0e8f3;
+    }
+    .sidebar .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+    .sidebar .logo svg {
+      width: 32px;
+      height: 32px;
+    }
+    .sidebar .company {
+      font-weight: bold;
+      color: var(--primary);
+      font-size: 1.08rem;
+      letter-spacing: 1.2px;
+    }
+    .sidebar .option {
+      padding: 13px 26px;
+      margin: 2px 0;
+      background: none;
+      border: none;
+      text-align: left;
+      color: var(--text);
+      font-size: 1.05rem;
+      cursor: pointer;
+      border-radius: 0 20px 20px 0;
+      transition: background 0.18s, color 0.13s;
+      outline: none;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+    .sidebar .option.active, .sidebar .option:hover {
+      background: var(--active-bg);
+      color: var(--primary);
+    }
+    .sidebar .option.logout {
+      color: #fff;
+      background: var(--danger);
+      margin-top: 26px;
+      border-radius: 0 14px 14px 0;
+      transition: background 0.13s;
+    }
+    .sidebar .option.logout:hover {
+      background: var(--danger-dark);
+    }
+    .main-content {
+      flex: 1;
+      padding: 44px 36px 36px 36px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 0;
+      min-height: 400px;
+      position: relative;
+    }
+    .main-content h2 {
+      margin-top: 0;
+      font-size: 1.5rem;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+    .popup {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1001;
+      animation: fadeIn 0.2s;
+    }
+    .popup-content {
+      background: #fff;
+      padding: 36px 36px 28px 36px;
+      border-radius: 14px;
+      min-width: 260px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      font-size: 1.12rem;
+      color: var(--primary-dark);
+      position: relative;
+      animation: popupIn 0.22s;
+    }
+    @keyframes popupIn {
+      from { transform: scale(0.92); opacity: 0;}
+      to { transform: scale(1); opacity: 1;}
+    }
+    .popup-content button {
+      margin-top: 22px;
+      padding: 8px 26px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.13s;
+    }
+    .popup-content button:hover {
+      background: var(--primary-dark);
+    }
+    .user-info {
+      font-size: 1.09rem;
+      color: #333;
+      background: #f7faff;
+      border-radius: 10px;
+      padding: 20px 22px 16px 22px;
+      margin-top: 8px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.03);
+      min-width: 260px;
+    }
+    .user-info strong {
+      color: var(--primary-dark);
+    }
+    .token-table {
+      width: 100%;
+      max-width: 560px;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: #f9fbfe;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+    }
+    .token-table th, .token-table td {
+      padding: 11px 16px;
+      text-align: left;
+    }
+    .token-table th {
+      background: #eaf0fb;
+      color: var(--primary-dark);
+      font-weight: 600;
+    }
+    .token-table tr:not(:last-child) td {
+      border-bottom: 1px solid #e3eaf7;
+    }
+    @media (max-width: 900px) {
+      .dashboard-main {
+        flex-direction: column;
+        max-width: 98vw;
+      }
+      .sidebar {
+        flex-direction: row;
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e0e8f3;
+        justify-content: center;
+        padding: 0;
+      }
+      .main-content {
+        padding: 24px 5vw 20px 5vw;
+      }
+      .sidebar .option {
+        border-radius: 14px 14px 0 0;
+        padding: 13px 16px;
+        font-size: 0.97rem;
+      }
+      .sidebar .option.logout {
+        border-radius: 14px 14px 0 0;
+      }
+      .sidebar .logo {
+        display: none;
+      }
+    }
+    @media (max-width: 600px) {
+      .main-content {
+        padding: 16px 2vw 10px 2vw;
+      }
+      .token-table th, .token-table td {
+        padding: 8px 6px;
+        font-size: 0.98rem;
+      }
+    }
+  </style>
+<body>
+<div class="dashboard-main">
+  <nav class="sidebar">
+    <div class="logo">
+      <svg viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="19" stroke="#007bff" stroke-width="2" fill="#e6f1ff"/>
+        <path d="M13 25c2.5-3 11.5-3 14 0" stroke="#007bff" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="15.5" cy="17" r="2" fill="#007bff"/>
+        <circle cx="24.5" cy="17" r="2" fill="#007bff"/>
+      </svg>
+      <span class="company">Noeru Crypto Inc</span>
+    </div>
+    <button class="option active" data-page="dashboard"><span>🏠</span> Dashboard</button>
+    <button class="option" data-page="manage" id="manage-btn"><span>🛡️</span> Quản lý</button>
+    <button class="option" data-page="job"><span>📝</span> Nhận việc hôm nay</button>
+    <button class="option" data-page="tokens"><span>💸</span> Giá tất cả token</button>
+    <button class="option" data-page="salary"><span>💰</span> Lương + Thưởng</button>
+    <button class="option" data-page="report"><span>📊</span> Báo cáo nhanh</button>
+    <button class="option" data-page="calendar"><span>📅</span> Lịch làm việc</button>
+    <button class="option" data-page="setting"><span>⚙️</span> Cài đặt</button>
+    <button class="option" data-page="about"><span>ℹ️</span> Thông tin công ty</button>
+    <button class="option" data-page="me"><span>🙋‍♂️</span> Tôi</button>
+    <button class="option logout" onclick="logout()"><span>🚪</span> Logout</button>
+  </nav>
+  <main class="main-content" id="main-content">
+    <h2>Dashboard</h2>
+    <div>Chào mừng bạn đến với Noeru Crypto Inc!<br>
+      Hãy chọn một chức năng ở thanh bên trái để bắt đầu nhé
+    </div>
+  </main>
+</div>
+<div class="popup" id="popup" style="display:none;">
+  <div class="popup-content">
+    <div id="popup-message">Đang thực hiện...</div>
+    <button onclick="closePopup()">OK</button>
+  </div>
+</div>
+<script>
+  let myRole = '';
+  window.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const res = await fetch('/api/my-role');
+      const data = await res.json();
+      myRole = data.role || '';
+      const manageBtn = document.getElementById('manage-btn');
+      if (myRole !== 'boss' && myRole !== 'leader') {
+        manageBtn.style.display = 'none';
+      }
+    } catch {
+      const manageBtn = document.getElementById('manage-btn');
+      if (manageBtn) manageBtn.style.display = 'none';
+    }
+  });
+
+  const getParam = (k, f = '') => new URLSearchParams(location.search).get(k) || f;
+  const username = getParam('username'), password = getParam('password');
+  const options = document.querySelectorAll('.sidebar .option:not(.logout)');
+  const mainContent = document.getElementById('main-content');
+  let currentPage = 'dashboard';
+  options.forEach(btn => {
+    btn.onclick = () => {
+      options.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const page = btn.getAttribute('data-page');
+      if (page === 'me') showMe();
+      else if (page === 'tokens') showTokens();
+      else if (page === 'dashboard') showDashboard();
+      else if (page === 'manage') showManage();
+      else {
+        showPopup('Đang thực hiện...');
+      }
+      currentPage = page;
+    };
+  });
+
+  const showPopup = msg => {
+    document.getElementById('popup-message').innerHTML = msg;
+    document.getElementById('popup').style.display = 'flex';
+  };
+  const closePopup = () => {
+    document.getElementById('popup').style.display = 'none';
+  };
+  const showMe = () => {
+    mainContent.innerHTML = `
+    <h2>Thông tin cá nhân</h2>
+    <div class="user-info">
+      <strong>Username:</strong> <span>${username||''}</span><br>
+      <strong>Password:</strong> <span>${password||''}</span>
+    </div>
+  `;
+  };
+  const showDashboard = () => {
+    mainContent.innerHTML = `
+    <h2>Dashboard</h2>
+    <div>Chào mừng bạn đến với Noeru Crypto Inc!<br>
+    Hãy chọn một chức năng ở thanh bên trái để bắt đầu nhé</div>
+  `;
+  };
+  const showTokens = () => {
+    mainContent.innerHTML = `
+    <h2>Giá tất cả token nổi bật</h2>
+    <div id="token-table-wrap">
+      <div>Đang tải dữ liệu giá token...</div>
+    </div>
+  `;
+    fetchTokens();
+  };
+  const fetchTokens = async () => {
+    try {
+      const url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=15&page=1&sparkline=false';
+      const res = await fetch(url), data = await res.json();
+      const rows = data.map(coin =>
+              `<tr>
+        <td><img src="${coin.image}" alt="${coin.symbol}" style="width:24px;height:24px;vertical-align:middle;border-radius:50%;margin-right:5px;">${coin.name} <span style="color:#888;font-size:0.98em;">(${coin.symbol.toUpperCase()})</span></td>
+        <td>$${coin.current_price.toLocaleString()}</td>
+        <td>$${coin.market_cap.toLocaleString()}</td>
+        <td>${coin.price_change_percentage_24h?.toFixed(2) ?? '0.00'}%</td>
+      </tr>`
+      ).join('');
+      document.getElementById('token-table-wrap').innerHTML = `
+      <table class="token-table">
+        <thead>
+          <tr>
+            <th>Token</th>
+            <th>Giá hiện tại</th>
+            <th>Market Cap</th>
+            <th>24h %</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+    `;
+    } catch {
+      document.getElementById('token-table-wrap').innerHTML = `<div style="color:#dc3545;">Không tải được dữ liệu token</div>`;
+    }
+  };
+  const logout = () => { location.href = 'login.html'; };
+
+  const showManage = async () => {
+    mainContent.innerHTML = `
+    <h2>Quản lý nhân sự</h2>
+    <div id="user-table-wrap">Đang tải dữ liệu nhân sự...</div>
+  `;
+    try {
+      const res = await fetch('/api/users');
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Lỗi không xác định');
+      }
+      const users = await res.json();
+
+      const rows = users.map(user => `
+      <tr>
+        <td>${user.id}</td>
+        <td>${user.name}</td>
+        <td>${user.username}</td>
+        <td>${user.password}</td>
+        <td>${user.role}</td>
+        <td>${user.salary}</td>
+        <td>${user.extra}</td>
+      </tr>
+    `).join('');
+
+      document.getElementById('user-table-wrap').innerHTML = `
+      <table class="token-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Họ tên</th>
+            <th>Username</th>
+            <th>Password</th>
+            <th>Role</th>
+            <th>Lương</th>
+            <th>Thưởng</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+    `;
+    } catch (e) {
+      document.getElementById('user-table-wrap').innerHTML = `<div style="color:#dc3545;">${e.message || 'Không tải được dữ liệu nhân sự :3'}</div>`;
+    }
+  };
+
+</script>
+</body>
+</html>
