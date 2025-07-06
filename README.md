@@ -1,4 +1,4 @@
-1. Tạo database trống
+1. Tạo database trống:
 CREATE DATABASE user_db;
 
 2. Import dữ liệu vào database bằng terminal:
